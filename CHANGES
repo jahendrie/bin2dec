@@ -1,0 +1,7 @@
+2014-02-04:     Initial release
+
+2014-03-21  1.3     Added binary output option, fixed an error in the LICENSE
+                    file.
+
+2014-04-20  1.4     Changed the way piping from stdin works and added the
+                    ability to convert binary numbers to ASCII characters.

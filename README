@@ -1,0 +1,108 @@
+================================================================================
+    bin2dec.c   |   Version 1.4     |   FreeBSD License     |   2014-04-20
+    James Hendrie                   |   hendrie.james@gmail.com
+================================================================================
+
+    1.  Description
+    2.  Installation / Uninstallation
+    3.  Usage
+    4.  Examples
+
+
+
+----------------------------------------
+    1.  Description
+----------------------------------------
+
+    bin2dec (working title) is a program that will convert binary numbers to
+    their decimal equivalents.  It can also convert to hexadecimal or octal, if
+    you're feeling saucy.
+
+    This is the companion to another program I've written recently, named
+    dec2bin; that program converts decimal numbers to binary.
+
+    I wrote this program (and the other one) because, although I'm almost
+    positive that these are exactly the sorts of operations already very
+    well-provided for on any standard UNIX or GNU/Linux system, I'll be damned
+    if I can remember which commands to use.  So here we are.
+
+    Incidentally, if you do know the appropriate commands, please shoot me a
+    line at the email address above and let me know.
+
+
+
+----------------------------------------
+    2.  Installation / Uninstallation
+----------------------------------------
+
+    To install, compile the program with 'make'.  It shouldn't take long, though
+    obviously you'll need a C compiler.  If you're on any modern UNIX or Linux
+    distro you should already have one, and if you don't, shame on you.
+
+    After you've compiled the program, install it to your system by issuing
+    'make install' with superuser privileges.
+
+    To remove the program and all its accessories, return to the directory to
+    which you originally extracted the tarball (or whichever directory has the
+    Makefile for this program) and type 'make uninstall', again with superuser
+    privileges.
+
+
+    Alternately, if you're on a Slackware system, you can install the Slackware
+    package for this program using the in-built package manager.  You should be
+    able to find it in the same place you found this tarball.
+
+
+
+----------------------------------------
+    3.  Usage
+----------------------------------------
+
+Usage:	bin2dec [OPTIONS] BINARY_NUMBER[s]
+
+Options:
+    -h or --help
+        Print help text
+    --version
+        Print version and author info
+    -   Pipe from stdin
+
+    -v  Print number type next to each number (verbosity)
+    -d  Enable decimal output (default)
+    -b  Binary output
+    -o  Octal output
+    -x  Hex output
+    -X  Hex output with capital letters
+    -a  Precise hex output
+    -A  Precise hex output with capital letters
+    -s  Output in 4-character sections, if appropriate
+    -l  Print new lines between sections of text
+    -t  Switch on text conversion mode
+
+
+
+----------------------------------------
+    4.  Examples
+----------------------------------------
+
+bin2dec 1011
+    This will print the number 11 to your terminal.
+
+bin2dec -xdo 10110
+    This will print the numbers 22, 26 and 16 to your terminal, each on its own
+    line.  In this case specifically, it's printed the hexadecimal number, the
+    decimal number and the octal number.The numbers are printed in the following
+    order:  Decimal, octal, hexadecimal and precise hexadecimal.  You can use
+    the -v option to print which type each is on the same line as the number, if
+    you'd like.
+
+bin2dec 1111 1001 1011
+    This will process all numbers given as arguments.
+
+echo 1111 1001 1011 | bin2dec -
+    This will do the same as above, except piped from stdin.
+
+echo 0110100001100101011011000110110001101111 | bin2dec -t
+    This will convert the above binary number to the word "hello".  Also note
+    that you don't have to use the '-' character to pipe from stdin if you don't
+    want to.
