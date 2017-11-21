@@ -23,7 +23,7 @@ all: $(SRC)/bin2dec.c
 install:
 	install $(OUTPUT) -D $(OUTPUTDIR)/$(OUTPUT)
 	install $(DOC)/$(MANPAGE) -D $(MANPATH)/$(MANPAGE)
-	install $(DOC)/README -D $(DOCPATH)/README
+	install README -D $(DOCPATH)/README
 	install $(DOC)/CHANGES -D $(DOCPATH)/CHANGES
 	install $(DOC)/LICENSE -D $(LICENSEPATH)/LICENSE
 
