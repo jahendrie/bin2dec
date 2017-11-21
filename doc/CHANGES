@@ -1,7 +1,13 @@
-2014-02-04:     Initial release
+2014-02-04  1.0     Initial release
 
 2014-03-21  1.3     Added binary output option, fixed an error in the LICENSE
                     file.
 
 2014-04-20  1.4     Changed the way piping from stdin works and added the
                     ability to convert binary numbers to ASCII characters.
+
+2017-11-20  1.5     Added ability to switch between little-endian and
+                    big-endian.  Fixed it up a bit so that it doesn't choke
+                    on numbers greater than ~4 billion.  Updated the
+                    documentation a little.
+

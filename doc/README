@@ -1,12 +1,13 @@
 ================================================================================
-    bin2dec.c   |   Version 1.4     |   FreeBSD License     |   2014-04-20
-    James Hendrie                   |   hendrie.james@gmail.com
+    bin2dec.c   |   Version 1.5     |   FreeBSD License     |   2017-11-20
+    James Hendrie                   |   hendrie dot james at gmail dot com
 ================================================================================
 
     1.  Description
     2.  Installation / Uninstallation
     3.  Usage
     4.  Examples
+    5.  Contact, etc.
 
 
 
@@ -65,11 +66,9 @@ Options:
         Print help text
     --version
         Print version and author info
-    -   Pipe from stdin
 
     -v  Print number type next to each number (verbosity)
     -d  Enable decimal output (default)
-    -b  Binary output
     -o  Octal output
     -x  Hex output
     -X  Hex output with capital letters
@@ -77,7 +76,10 @@ Options:
     -A  Precise hex output with capital letters
     -s  Output in 4-character sections, if appropriate
     -l  Print new lines between sections of text
-    -t  Switch on text conversion mode
+    -t  Turn on text-mode conversion (convert from binary to ASCII)
+    -e  Read binary as little-endian
+    -E  Read binary as big-endian (default)
+    -   Read from stdin
 
 
 
@@ -100,9 +102,23 @@ bin2dec 1111 1001 1011
     This will process all numbers given as arguments.
 
 echo 1111 1001 1011 | bin2dec -
-    This will do the same as above, except piped from stdin.
+    This will do the same as above, except read from stdin
 
-echo 0110100001100101011011000110110001101111 | bin2dec -t
-    This will convert the above binary number to the word "hello".  Also note
-    that you don't have to use the '-' character to pipe from stdin if you don't
-    want to.
+echo "0110100001100101011011000110110001101111" | bin2dec -t -
+    Read the binary from stdin, converting it to the word 'hello'.
+
+
+
+----------------------------------------
+    5.  Contact, etc.
+----------------------------------------
+
+    Author:
+        James Hendrie
+        hendrie.james@gmail.com
+        hendrie.james@protonmail.com
+
+    Sites:
+        http://www.someplacedumb/net/content/progs
+        https://github.com/jahendrie
+            https://github.com/jahendrie/bin2dec    <-- This program!

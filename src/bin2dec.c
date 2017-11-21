@@ -1,5 +1,5 @@
 /*******************************************************************************
- * bin2dec.c    |   version 1.4     |   FreeBSD License     |   2014-04-20
+ * bin2dec.c    |   version 1.5     |   FreeBSD License     |   2017-11-20
  * James Hendrie                    |   hendrie.james@gmail.com
  *
  *  Description:
@@ -12,23 +12,25 @@
 
 #define MAX_STRING_LENGTH 256
 #define BIN_STR_LENGTH 7
+#define VERSION "1.5"
 
 
 /*  --------------------    Global Options ----------------------- */
-int bin2bin;        //  Binary output
-int bin2dec;        //  Do binary to decimal conversion (default)
-int bin2hex;        //  binary to hex
-int bin2phex;       //  binary to precise hex
-int bin2oct;        //  binary to octal
-int sections;       //  print in 4-block sections if appropriate
+int bin2bin;            //  Binary output
+int bin2dec;            //  Do binary to decimal conversion (default)
+int bin2hex;            //  binary to hex
+int bin2phex;           //  binary to precise hex
+int bin2oct;            //  binary to octal
+int sections;           //  print in 4-block sections if appropriate
 int hexCaps;
 int phexCaps;
-int lineSpacing;    //  prettier output if desired
-int verbose;        //  Verbosity
-int textMode;       //  Text conversion mode
+int lineSpacing;        //  prettier output if desired
+int verbose;            //  Verbosity
+int textMode;           //  Text conversion mode
+int bigEndian;          //  Read numbers as big-ending (default=1=yes)
 int totalConversions;   //  Total number of conversions
 
-static const char *optString = "bdvxXaAoslht";
+static const char *optString = "bdvxXaAoslhteE";
 
 
 /*  Print the usage text */
@@ -45,14 +47,12 @@ void print_help(void)
     print_usage(stdout);
 
     /*  Yeah, I know this is ugly.  */
-    printf("\nThis program converts a binary number to a decimal number.  For");
-    printf(" example, issuing\n\n");
-    printf("\t'bin2dec 1011'\n\nwould result in a decimal output of 11.\n");
+    printf("\nThis program converts a binary number to a decimal number.\n" );
 
     printf("\nOptions:\n");
     printf("  -h or --help\tPrint this help text\n");
     printf("  --version\tPrint version and author info\n");
-    printf("  -\t\tPipe from stdin\n");
+    printf("  -\t\tRead from stdin\n");
     printf("  -v\t\tEnable verbose output (print what type each result is)\n");
     printf("  -d\t\tDecimal output (default)\n");
     printf("  -b\t\tBinary output\n");
@@ -64,13 +64,15 @@ void print_help(void)
     printf("  -s\t\tOutput in 4-character sections, space-separated\n");
     printf("  -l\t\tPrint a new line between sections of text\n");
     printf("  -t\t\tText conversion mode\n");
+    printf("  -e\t\tRead binary numbers as little-endian\n" );
+    printf("  -E\t\tRead binary numbers as big-endian (default)\n" );
 }
 
 
 /*  version and author info */
 void print_version(void)
 {
-    printf("bin2dec version 1.4\n");
+    printf("bin2dec version %s\n", (VERSION) );
     printf("James Hendrie - hendrie.james@gmail.com\n");
 }
 
@@ -105,13 +107,13 @@ int check_for_binary( char *s )
 
 
 /*  Multiply 'number' to the power of 'power' */
-unsigned int power_of( int number, int power )
+double power_of( int number, int power )
 {
     /*  If we're multiplying to the power of zero */
     if( power == 0 )
         return(1);
 
-    int current = number;
+    double current = number;
 
     /*  For loop; make my number, GROW!!!! */
     int temp = 0;
@@ -137,28 +139,47 @@ double binary_to_decimal( char *s )
 
     /*  We're starting on the 'right side' of the binary string */
     int i = 0;
-    for( i = strlen(s); i >= 0; --i )
+
+    //  If we're doing the big-endian thing (default)
+    if( bigEndian == 1 )
     {
-        /*  If we hit a newline or a null char, just ignore it */
-        if( s[i] == '\n' || s[i] == '\0' )
-            continue;
-
-        /*
-         * If we hit a zero, move to the 'left' but don't add to the decimal
-         * total
-         */
-        if( s[i] == '0' )
+        for( i = strlen(s); i >= 0; --i )
         {
-            ++placement;
-        }
+            /*  If we hit a newline or a null char, just ignore it */
+            if( s[i] == '\n' || s[i] == '\0' )
+                continue;
 
-        /*  Add to decimal total according to placement in binary string */
-        else if( s[i] == '1' )
+            if( s[i] == '0' ) { ++placement; }
+
+            else if( s[i] == '1' )
+            {
+                total += power_of( 2.0f, placement );
+                ++placement;
+            }
+
+        }   //  for i, etc.
+    }   //  if bigEndian
+
+
+    //  Otherwise, do the weird, little-endian stuff
+    else
+    {
+        for( i = 0; i < strlen( s ); ++i )
         {
-            total += power_of( 2, placement );
-            ++placement;
-        }
+            /*  If we hit a newline or a null char, just ignore it */
+            if( s[i] == '\n' || s[i] == '\0' ) continue;
+
+            if( s[i] == '0' ) { ++placement; }
+
+            else if( s[i] == '1' )
+            {
+                total += power_of( 2.0f, placement );
+                ++placement;
+            }
+
+        }   //  for i, etc.
     }
+
 
     /*  Return our total */
     return( total );
@@ -546,6 +567,8 @@ int main( int argc, char *argv[] )
     hexCaps = 0;
     phexCaps = 0;
     verbose = 0;
+    textMode = 0;
+    bigEndian = 1;
 
     /*  Get options */
     int opt = getopt( argc, argv, optString );
@@ -590,6 +613,13 @@ int main( int argc, char *argv[] )
             case 't':
                 textMode = 1;
                 break;
+            case 'e':
+                bigEndian = 0;
+                break;
+            case 'E':
+                bigEndian = 1;
+                break;
+
             default:
                 //  Do nuttin'
                 break;
