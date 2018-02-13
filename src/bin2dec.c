@@ -1,5 +1,5 @@
 /*******************************************************************************
- * bin2dec.c    |   version 1.5     |   FreeBSD License     |   2017-11-20
+ * bin2dec.c    |   version 1.6     |   FreeBSD License     |   2018-02-12
  * James Hendrie                    |   hendrie.james@gmail.com
  *
  *  Description:
@@ -12,7 +12,7 @@
 
 #define MAX_STRING_LENGTH 256
 #define BIN_STR_LENGTH 7
-#define VERSION "1.5"
+#define VERSION "1.6"
 
 
 /*  --------------------    Global Options ----------------------- */
@@ -82,6 +82,26 @@ void mem_error( const char *description )
 {
     fprintf(stderr, "ERROR:  Out of memory\n");
     fprintf(stderr, "%s\n", description);
+}
+
+
+/*
+ *  Copies one string into another one (dest being presumably empty), minus
+ *  spaces and newlines
+ */
+void strip_whitespace( char *destString, char *fromString )
+{
+    int sLen = strlen( fromString );
+    int dCounter, fCounter;
+
+    for( dCounter = 0, fCounter = 0; fCounter <= sLen; ++fCounter )
+    {
+        if( fromString[ fCounter ] != ' ' && fromString[ fCounter ] != '\n' )
+        {
+            destString[ dCounter ] = fromString[ fCounter ];
+            ++dCounter;
+        }
+    }
 }
 
 
@@ -426,8 +446,16 @@ int number_to_string( char *string )
         return(1);
     }
 
-    /*  Null out binStr */
+    /*  A mutable copy of the original string */
+    char fromStringStack[ sLen ];
+    char *fromString = fromStringStack;
+
+    /*  Null out strings */
     memset( binStr, '\0', (BIN_STR_LENGTH) );
+    memset( fromString, '\0', ( sLen + 1 ));
+
+    /*  Strip whitespace */
+    strip_whitespace( fromString, string );
 
 
     /*
@@ -440,11 +468,11 @@ int number_to_string( char *string )
         /*  Check if we're only working with one character */
         if( sLen <= (BIN_STR_LENGTH) + 1)
         {
-            ch = (int)binary_to_decimal( string );
+            ch = (int)binary_to_decimal( fromString );
 
             if( ch != 0 )
             {
-                text_mode_printer( ch, string );
+                text_mode_printer( ch, fromString );
 
                 if( lineSpacing == 1 && totalConversions < 2 )
                     printf("\n");
@@ -456,10 +484,10 @@ int number_to_string( char *string )
         {
             for( counter = 0; counter <= (BIN_STR_LENGTH) ; ++counter )
             {
-                binStr[counter] = string[counter];
+                binStr[counter] = fromString[counter];
             }
 
-            string += counter;
+            fromString += counter;
             stringMoved += counter;
             sLen -= counter;
 
@@ -482,7 +510,7 @@ int number_to_string( char *string )
         printf("\n");
 
     /*  Reset the original string */
-    string -= stringMoved;
+    fromString -= stringMoved;
 
     /*  Free / null binStr */
     free( binStr );
@@ -516,6 +544,7 @@ int send_string_stdin(void)
 
             if( textMode == 1 )
                 number_to_string( theNumber );
+
             else
             {
                 decimalResult = binary_to_decimal( theNumber );

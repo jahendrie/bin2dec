@@ -11,3 +11,5 @@
                     on numbers greater than ~4 billion.  Updated the
                     documentation a little.
 
+
+2018-02-12  1.6     Fixed the way text mode interpreted input in quotes
